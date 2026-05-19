@@ -69,7 +69,7 @@ export const setupPostModal = (boardId, onSuccess, initialData = null) => {
               <button type="button" id="btn-generate-image" class="btn btn-secondary">Create</button>
             </div>
             <div id="ai-image-preview-container" style="display: ${selectedMediaUrl && selectedMediaUrl.includes('pollinations') ? 'block' : 'none'}; margin-top: var(--spacing-4); text-align: center;">
-              <img id="ai-image-preview" src="${selectedMediaUrl && selectedMediaUrl.includes('pollinations') ? selectedMediaUrl : ''}" style="max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);" onload="const l = document.getElementById('ai-img-loading'); if(l) l.style.display='none'" onerror="const l = document.getElementById('ai-img-loading'); if(l) l.textContent='Image generation failed or was blocked by browser. Please try a simpler prompt.'" />
+              <img id="ai-image-preview" src="${selectedMediaUrl && selectedMediaUrl.includes('pollinations') ? selectedMediaUrl : ''}" style="max-width: 100%; border-radius: var(--radius-md); box-shadow: var(--shadow-sm);" />
               <div id="ai-img-loading" style="display: none; color: var(--text-secondary); margin-top: 8px;">Generating your masterpiece...</div>
               <button type="button" class="btn btn-secondary btn-clear-media" style="margin-top: var(--spacing-2); font-size: 0.8rem;">Remove Image</button>
             </div>
@@ -284,8 +284,6 @@ export const setupPostModal = (boardId, onSuccess, initialData = null) => {
       loadingText.textContent = 'Image generation failed. Please try again.';
       btnGenerateImage.disabled = false;
     }
-    
-    btnGenerateImage.disabled = false;
   });
 
   // Clear media handlers

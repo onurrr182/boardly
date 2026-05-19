@@ -97,27 +97,22 @@ export const generateAIText = (keywordsArray) => {
 export const generateAIImageUrl = async (prompt) => {
   const encodedPrompt = encodeURIComponent(prompt.trim());
   const randomSeed = Math.floor(Math.random() * 1000000);
-  // Use the standard high-speed pollinations.ai endpoint
   return `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}`;
 };
 
-// Extremely robust, highly relevant curated gallery system
+// Curated database with distinct categories for cat and dog
 const IMAGE_DATABASE = {
   farewell: [
     'https://images.unsplash.com/photo-1460570081702-8c17b88bb194?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1516962215378-7fa2e137ae93?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1506869640319-ce1a18b90b17?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1484807352052-23338990c6c6?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1494178270175-e96de2971df9?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1508214751196-bcfd4ca60f91?auto=format&fit=crop&w=600&q=80'
+    'https://images.unsplash.com/photo-1484807352052-23338990c6c6?auto=format&fit=crop&w=600&q=80'
   ],
   birthday: [
     'https://images.unsplash.com/photo-1558636508-e0db3814bd1d?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1530103862676-de8892b12a15?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1464349153735-7db50ed83c84?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1551024709-8f23befc6f87?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1533294455009-a77b7557d2d1?auto=format&fit=crop&w=600&q=80'
+    'https://images.unsplash.com/photo-1513151233558-d860c5398176?auto=format&fit=crop&w=600&q=80'
   ],
   party: [
     'https://images.unsplash.com/photo-1522202176988-66273c2fd55f?auto=format&fit=crop&w=600&q=80',
@@ -137,11 +132,22 @@ const IMAGE_DATABASE = {
     'https://images.unsplash.com/photo-1457089328109-e5d9f4e8b3e1?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1563241527-3004b7be023b?auto=format&fit=crop&w=600&q=80'
   ],
-  funny: [
+  cat: [
     'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80', // Cat with glasses
-    'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80', // Pug
     'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=600&q=80', // Cat looking funny
-    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80' // Dog with tongue out
+    'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80', // Cat sleeping
+    'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80'  // Cat standing
+  ],
+  dog: [
+    'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80', // Pug
+    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80', // Dog with tongue out
+    'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80', // Happy retriever
+    'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80'  // Golden retriever puppy
+  ],
+  funny: [
+    'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1531804055935-76f44d7c3621?auto=format&fit=crop&w=600&q=80'  // Funny llama
   ],
   default: [
     'https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=600&q=80', // Sunset
@@ -154,7 +160,7 @@ const IMAGE_DATABASE = {
 export const getPublicImages = (term) => {
   return new Promise((resolve) => {
     setTimeout(() => {
-      const search = term.toLowerCase();
+      const search = term.toLowerCase().trim();
       let matchedImages = [];
       
       if (search.includes('birthday') || search.includes('cake')) {
@@ -167,13 +173,16 @@ export const getPublicImages = (term) => {
         matchedImages = IMAGE_DATABASE.office;
       } else if (search.includes('flower') || search.includes('bouquet')) {
         matchedImages = IMAGE_DATABASE.flowers;
-      } else if (search.includes('funny') || search.includes('dog') || search.includes('cat') || search.includes('pet')) {
+      } else if (search === 'cat' || search.includes('cats') || search.includes('kitten')) {
+        matchedImages = IMAGE_DATABASE.cat;
+      } else if (search === 'dog' || search.includes('dogs') || search.includes('puppy') || search.includes('pup')) {
+        matchedImages = IMAGE_DATABASE.dog;
+      } else if (search.includes('funny') || search.includes('pet') || search.includes('animal')) {
         matchedImages = IMAGE_DATABASE.funny;
       } else {
         matchedImages = IMAGE_DATABASE.default;
       }
       
-      // Shuffle the results so it doesn't always look the exact same
       const shuffled = [...matchedImages].sort(() => 0.5 - Math.random());
       resolve(shuffled.slice(0, 4));
     }, 300);
