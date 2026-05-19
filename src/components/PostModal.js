@@ -264,6 +264,7 @@ export const setupPostModal = (boardId, onSuccess, initialData = null) => {
       // This prevents the browser from firing a false-positive "onerror" event 
       // when aborting a previous pending image load on the DOM element!
       const imgLoader = new Image();
+      let triedProxy = false;
       
       imgLoader.onload = () => {
         selectedMediaUrl = imgLoader.src;
@@ -274,9 +275,16 @@ export const setupPostModal = (boardId, onSuccess, initialData = null) => {
       };
       
       imgLoader.onerror = () => {
-        loadingText.innerHTML = '⚠️ Image generation failed or timed out.<br>Please try a slightly simpler prompt!';
-        previewImg.style.display = 'none';
-        btnGenerateImage.disabled = false;
+        if (!triedProxy) {
+          triedProxy = true;
+          // Bypass browser blocklists/ad-blockers by loading through the trusted public Weserv image proxy
+          const proxyUrl = `https://images.weserv.nl/?url=${encodeURIComponent(url)}`;
+          imgLoader.src = proxyUrl;
+        } else {
+          loadingText.innerHTML = '⚠️ Image generation failed or was blocked by a safety filter.<br>Please try a simpler, more positive prompt!';
+          previewImg.style.display = 'none';
+          btnGenerateImage.disabled = false;
+        }
       };
       
       imgLoader.src = url;

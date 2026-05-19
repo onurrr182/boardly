@@ -100,7 +100,7 @@ export const generateAIImageUrl = async (prompt) => {
   return `https://image.pollinations.ai/prompt/${encodedPrompt}?nologo=true&seed=${randomSeed}`;
 };
 
-// Curated database with distinct categories for cat and dog
+// Curated backup database in case Lexica network fails
 const IMAGE_DATABASE = {
   farewell: [
     'https://images.unsplash.com/photo-1460570081702-8c17b88bb194?auto=format&fit=crop&w=600&q=80',
@@ -133,58 +133,75 @@ const IMAGE_DATABASE = {
     'https://images.unsplash.com/photo-1563241527-3004b7be023b?auto=format&fit=crop&w=600&q=80'
   ],
   cat: [
-    'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80', // Cat with glasses
-    'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=600&q=80', // Cat looking funny
-    'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80', // Cat sleeping
-    'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80'  // Cat standing
+    'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1543852786-1cf6624b9987?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1573865526739-10659fec78a5?auto=format&fit=crop&w=600&q=80'
   ],
   dog: [
-    'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80', // Pug
-    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80', // Dog with tongue out
-    'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80', // Happy retriever
-    'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80'  // Golden retriever puppy
+    'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1583511655857-d19b40a7a54e?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1507146426996-ef05306b995a?auto=format&fit=crop&w=600&q=80'
   ],
   funny: [
     'https://images.unsplash.com/photo-1533738363-b7f9aef128ce?auto=format&fit=crop&w=600&q=80',
     'https://images.unsplash.com/photo-1518020382113-a7e8fc38eac9?auto=format&fit=crop&w=600&q=80',
-    'https://images.unsplash.com/photo-1531804055935-76f44d7c3621?auto=format&fit=crop&w=600&q=80'  // Funny llama
+    'https://images.unsplash.com/photo-1531804055935-76f44d7c3621?auto=format&fit=crop&w=600&q=80'
   ],
   default: [
-    'https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=600&q=80', // Sunset
-    'https://images.unsplash.com/photo-1506744626753-1fa44df14dd5?auto=format&fit=crop&w=600&q=80', // Mountains
-    'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80', // Sparklers
-    'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?auto=format&fit=crop&w=600&q=80' // Confetti
+    'https://images.unsplash.com/photo-1478146896981-b80fe463b330?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1506744626753-1fa44df14dd5?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1518531933037-91b2f5f229cc?auto=format&fit=crop&w=600&q=80',
+    'https://images.unsplash.com/photo-1519750157634-b6d493a0f77c?auto=format&fit=crop&w=600&q=80'
   ]
 };
 
-export const getPublicImages = (term) => {
-  return new Promise((resolve) => {
-    setTimeout(() => {
-      const search = term.toLowerCase().trim();
-      let matchedImages = [];
-      
-      if (search.includes('birthday') || search.includes('cake')) {
-        matchedImages = IMAGE_DATABASE.birthday;
-      } else if (search.includes('farewell') || search.includes('leave') || search.includes('bye')) {
-        matchedImages = IMAGE_DATABASE.farewell;
-      } else if (search.includes('party') || search.includes('celebrat')) {
-        matchedImages = IMAGE_DATABASE.party;
-      } else if (search.includes('work') || search.includes('office') || search.includes('colleague')) {
-        matchedImages = IMAGE_DATABASE.office;
-      } else if (search.includes('flower') || search.includes('bouquet')) {
-        matchedImages = IMAGE_DATABASE.flowers;
-      } else if (search === 'cat' || search.includes('cats') || search.includes('kitten')) {
-        matchedImages = IMAGE_DATABASE.cat;
-      } else if (search === 'dog' || search.includes('dogs') || search.includes('puppy') || search.includes('pup')) {
-        matchedImages = IMAGE_DATABASE.dog;
-      } else if (search.includes('funny') || search.includes('pet') || search.includes('animal')) {
-        matchedImages = IMAGE_DATABASE.funny;
-      } else {
-        matchedImages = IMAGE_DATABASE.default;
+// Advanced dynamic search using Lexica API over high-speed CORS proxy, with local curated fallbacks
+export const getPublicImages = async (term) => {
+  const search = term.toLowerCase().trim();
+  if (!search) return IMAGE_DATABASE.default;
+
+  try {
+    // 1. Try to search Lexica (billions of stunning AI images) via a secure public CORS proxy
+    const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(`https://lexica.art/api/v1/search?q=${search}`)}`;
+    const response = await fetch(proxyUrl);
+    
+    if (response.ok) {
+      const data = await response.json();
+      if (data && data.images && data.images.length > 0) {
+        // Return small, optimized image sizes to prevent long loading times
+        return data.images.slice(0, 8).map(img => img.srcSmall || img.src);
       }
-      
-      const shuffled = [...matchedImages].sort(() => 0.5 - Math.random());
-      resolve(shuffled.slice(0, 4));
-    }, 300);
+    }
+  } catch (e) {
+    console.warn("Lexica search failed, falling back to local database", e);
+  }
+
+  // 2. Fallback to highly optimized local database if Lexica fails or is blocked
+  return new Promise((resolve) => {
+    let matchedImages = [];
+    if (search.includes('birthday') || search.includes('cake')) {
+      matchedImages = IMAGE_DATABASE.birthday;
+    } else if (search.includes('farewell') || search.includes('leave') || search.includes('bye')) {
+      matchedImages = IMAGE_DATABASE.farewell;
+    } else if (search.includes('party') || search.includes('celebrat')) {
+      matchedImages = IMAGE_DATABASE.party;
+    } else if (search.includes('work') || search.includes('office') || search.includes('colleague')) {
+      matchedImages = IMAGE_DATABASE.office;
+    } else if (search.includes('flower') || search.includes('bouquet')) {
+      matchedImages = IMAGE_DATABASE.flowers;
+    } else if (search === 'cat' || search.includes('cats') || search.includes('kitten')) {
+      matchedImages = IMAGE_DATABASE.cat;
+    } else if (search === 'dog' || search.includes('dogs') || search.includes('puppy') || search.includes('pup')) {
+      matchedImages = IMAGE_DATABASE.dog;
+    } else if (search.includes('funny') || search.includes('pet') || search.includes('animal')) {
+      matchedImages = IMAGE_DATABASE.funny;
+    } else {
+      matchedImages = IMAGE_DATABASE.default;
+    }
+    
+    const shuffled = [...matchedImages].sort(() => 0.5 - Math.random());
+    resolve(shuffled.slice(0, 4));
   });
 };
