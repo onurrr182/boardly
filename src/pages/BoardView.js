@@ -1,4 +1,4 @@
-import { getBoard, deletePost } from '../store.js';
+import { getBoard, deletePost, canModifyPost } from '../store.js';
 import { THEMES } from '../themes.js';
 import { navigateTo } from '../router.js';
 import { renderPostCard } from '../components/PostCard.js';
@@ -54,7 +54,7 @@ export default function BoardViewPage(container, params) {
         </div>
       ` : `
         <div class="masonry-grid" id="board-posts-grid">
-          ${posts.map(post => renderPostCard(post, theme.cardStyle)).join('')}
+          ${posts.map(post => renderPostCard(post, theme.cardStyle, canModifyPost(boardId, post.id))).join('')}
         </div>
       `}
     </div>
@@ -97,6 +97,8 @@ export default function BoardViewPage(container, params) {
 
       if (editBtn) {
         const postId = editBtn.dataset.id;
+        if (!canModifyPost(boardId, postId)) return alert("You don't have permission to edit this post!");
+        
         const currentBoard = getBoard(boardId);
         const postToEdit = currentBoard.posts.find(p => p.id === postId);
         if (postToEdit) {
@@ -108,6 +110,8 @@ export default function BoardViewPage(container, params) {
 
       if (deleteBtn) {
         const postId = deleteBtn.dataset.id;
+        if (!canModifyPost(boardId, postId)) return alert("You don't have permission to delete this post!");
+        
         if (confirm('Are you sure you want to delete this post?')) {
           deletePost(boardId, postId);
           BoardViewPage(container, params);
