@@ -1,0 +1,5 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 60" fill="none">
+  <path d="M10 45v-30A5 5 0 0 1 15 10H40v40H15a5 5 0 0 1 0-10H40" stroke="#4F46E5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <path d="M25 22L33 30L25 38" stroke="#4F46E5" stroke-width="4" stroke-linecap="round" stroke-linejoin="round"/>
+  <text x="50" y="38" font-family="Outfit, sans-serif" font-weight="800" font-size="28" fill="#1E293B">Farewell<tspan fill="#4F46E5">Book</tspan></text>
+</svg>
