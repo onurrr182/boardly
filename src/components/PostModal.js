@@ -259,20 +259,30 @@ export const setupPostModal = (boardId, onSuccess, initialData = null) => {
     
     try {
       const url = await generateAIImageUrl(promptText);
-      selectedMediaUrl = url;
-      previewImg.src = url;
       
-      previewImg.onload = () => {
+      // We use a clean, in-memory preloader. 
+      // This prevents the browser from firing a false-positive "onerror" event 
+      // when aborting a previous pending image load on the DOM element!
+      const imgLoader = new Image();
+      
+      imgLoader.onload = () => {
+        selectedMediaUrl = imgLoader.src;
+        previewImg.src = imgLoader.src;
         loadingText.style.display = 'none';
         previewImg.style.display = 'inline-block';
+        btnGenerateImage.disabled = false;
       };
       
-      previewImg.onerror = () => {
+      imgLoader.onerror = () => {
         loadingText.innerHTML = '⚠️ Image generation failed or timed out.<br>Please try a slightly simpler prompt!';
         previewImg.style.display = 'none';
+        btnGenerateImage.disabled = false;
       };
+      
+      imgLoader.src = url;
     } catch (e) {
       loadingText.textContent = 'Image generation failed. Please try again.';
+      btnGenerateImage.disabled = false;
     }
     
     btnGenerateImage.disabled = false;
